@@ -1,0 +1,79 @@
+# Jurnal Belajar CCNA 200-301: Day 2 - Interfaces and Cables
+
+## 📌 Ringkasan Pembelajaran
+Hari ini saya telah menyelesaikan materi dan praktik **Day 2 Complete Course CCNA 200-301** dari *Jeremy's IT Lab*. Fokus pembelajaran hari ini adalah memahami Layer Fisik (Physical Layer), karakteristik berbagai jenis media kabel jaringan, logika pemetaan pin konektor, serta implementasi praktisnya menggunakan Cisco Packet Tracer.
+
+---
+
+## 📑 1. Pendalaman Teori (Interfaces & Cables)
+
+### A. Standar Media Tembaga (Copper Ethernet)
+Berdasarkan standar **IEEE 802.3**, kecepatan transmisi data diukur dalam *bits per second* (bps). Berikut adalah ringkasan standar kabel tembaga yang dipelajari:
+
+| Standar Resmi | Nama Kasual | Kecepatan | Tipe Kabel | Panjang Maksimum | Jumlah Pin Digunakan |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **IEEE 802.3** | 10Base-T (Ethernet) | 10 Mbps | UTP (*Twisted Pair*) | 100 Meter | 4 Pin (2 Pasang) |
+| **IEEE 802.3u** | 100Base-TX (Fast Ethernet) | 100 Mbps | UTP (*Twisted Pair*) | 100 Meter | 4 Pin (2 Pasang) |
+| **IEEE 802.3ab** | 1000Base-T (Gigabit Ethernet) | 1 Gbps | UTP (*Twisted Pair*) | 100 Meter | 8 Pin (4 Pasang) |
+| **IEEE 802.3an** | 10GBase-T (10 Gigabit Ethernet) | 10 Gbps | UTP (*Twisted Pair*) | 100 Meter | 8 Pin (4 Pasang) |
+
+### B. Logika Pengkabelan RJ45 & UTP (Unshielded Twisted Pair)
+Kabel UTP memiliki 8 kabel di dalamnya yang disusun menjadi 4 pasang saling terlilit untuk meminimalisir gangguan elektromagnetik (*Electromagnetic Interference* / EMI).
+
+* **Logika Pin Perangkat:**
+  * **MDI Devices (PC, Server, Router, Firewall):** Mengirimkan data (*Transmit* / TX) pada pin **1 & 2**, menerima data (*Receive* / RX) pada pin **3 & 6**.
+  * **MDI-X Devices (Switch, Hub):** Menerima data (*Receive* / RX) pada pin **1 & 2**, mengirimkan data (*Transmit* / TX) pada pin **3 & 6**.
+
+* **Aturan Penggunaan Kabel (Ketika Auto MDI-X Tidak Aktif):**
+  * **Straight-through Cable:** Digunakan untuk menghubungkan dua perangkat yang **berbeda jenis** (contoh: PC ke Switch, Router ke Switch). Pin 1 terhubung ke Pin 1, Pin 2 ke Pin 2, dst.
+  * **Crossover Cable:** Digunakan untuk menghubungkan dua perangkat yang **sejenis** (contoh: Switch ke Switch, Router ke Router, PC ke PC). Jalur TX pada satu sisi disilangkan secara fisik menuju jalur RX di sisi lawan (Pin 1 ke 3, Pin 2 ke 6).
+
+> 💡 **Catatan Teknis:** Pemahaman logika pertukaran jalur *Transmit* (TX) dan *Receive* (RX) ini sangat krusial. Konsepnya analog dengan komunikasi serial pada antarmuka perangkat keras (*hardware*), di mana pin TX pengirim harus selalu bertemu dengan pin RX penerima agar pertukaran data secara *Full-Duplex* dapat berjalan stabil tanpa kolisi.
+> 
+> Perangkat modern saat ini umumnya sudah mendukung **Auto MDI-X** yang mendeteksi konfigurasi pin secara otomatis, namun pemahaman fundamental ini tetap wajib dikuasai untuk skenario *troubleshooting* pada sistem jaringan *legacy*.
+
+### C. Teknologi Fiber Optic
+Digunakan ketika kebutuhan jarak interkoneksi melampaui batas transmisi tembaga (100 meter). Fiber optic menggunakan sinyal cahaya di dalam inti kaca (*glass core*).
+
+1. **Multi-mode Fiber (MMF):**
+   * Diameter inti (*core*) lebih lebar.
+   * Menggunakan transmitter berbasis LED (lebih ekonomis).
+   * Cahaya masuk melalui berbagai sudut (*modes*), rentan terhadap *modal dispersion* pada jarak jauh.
+   * Cocok untuk jarak menengah (hingga ~550 meter).
+2. **Single-mode Fiber (SMF):**
+   * Diameter inti (*core*) sangat tipis/sempit.
+   * Menggunakan transmitter berbasis Laser (lebih mahal).
+   * Sinyal cahaya merambat lurus tanpa refleksi sudut yang ekstrem.
+   * Optimal untuk jarak sangat jauh (bisa mencapai 10 km hingga 40 km+).
+
+---
+
+## 🛠️ 2. Praktik Lab (Cisco Packet Tracer)
+
+Pada sesi *Day 2 Lab*, saya melakukan simulasi interkoneksi perangkat pada sebuah topologi kompleks dengan kondisi **Auto MDI-X dinonaktifkan/tidak didukung**. Tujuan utama lab ini adalah melatih sensitivitas pemilihan media kabel yang tepat berdasarkan jenis perangkat dan batasan geografis (jarak).
+
+### Skenario Konektivitas yang Berhasil Diimplementasikan:
+1. **Koneksi End-Host ke Access Layer:**
+   * Menghubungkan **PC 1 ↔ Switch 3**, **PC 2 ↔ Switch 4**, dan **Server 1 ↔ Switch 8** menggunakan kabel **Copper Straight-through**.
+2. **Koneksi Antar-Switch (Distribution/Core Layer):**
+   * Menghubungkan sesama switch (misal: **Switch 3 ↔ Switch 1**, **Switch 1 ↔ Switch 2**) menggunakan kabel **Copper Crossover** karena kedua perangkat memiliki pemetaan pin yang sama (MDI-X ke MDI-X).
+3. **Koneksi Switch ke Router:**
+   * Menghubungkan **Switch 1 ↔ R2** dan **Switch 6 ↔ R4** menggunakan kabel **Copper Straight-through**.
+4. **Koneksi Antar-Router (Metropolitan / Wide Area Network):**
+   * **R2 ↔ R1 (Jarak 50 Meter):** Menggunakan kabel **Copper Crossover** karena jarak masih di bawah batas maksimal 100 meter.
+   * **R1 ↔ R3 (Jarak 3 Kilometer):** Menggunakan koneksi **Single-mode Fiber** (via SFP Transceiver) karena jarak geografis yang jauh melampaui batas maksimal UTP dan Multi-mode Fiber.
+   * **R3 ↔ R4 (Jarak 250 Meter):** Menggunakan koneksi **Multi-mode Fiber** karena jarak berada di atas 100 meter (UTP tidak mampu) namun di bawah 550 meter, menjadikannya pilihan yang paling efisien dari segi performa biaya (*cost-efficiency*).
+
+---
+
+## 🏁 Kesimpulan Belajar
+Memahami seluk-beluk layer fisik, manajemen media transmisi, dan keterbatasan jarak fisik infrastruktur sangat membantu memperluas cara pandang saya dalam membangun ekosistem teknologi. Sinkronisasi antara kestabilan infrastruktur jaringan di layer bawah dengan keandalan sistem aplikasi di layer atas adalah kunci utama untuk menciptakan arsitektur IT yang tangguh dan *scalable*.
+
+---
+
+## 🔗 Referensi & Sumber Materi
+* **Teori:** [Jeremy's IT Lab - Free CCNA | Interfaces and Cables | Day 2](https://www.youtube.com/watch?v=ieTH5lVhNaY)
+* **Praktik:** [Jeremy's IT Lab - Free CCNA | Connecting Devices | Day 2 Lab](https://www.youtube.com/watch?v=K6Qt23sY68Y)
+
+---
+*Jurnal ini ditulis sebagai bagian dari komitmen continuous learning dalam mendalami infrastruktur jaringan.*
